@@ -6,12 +6,14 @@ import CounterSection from "../components/CounterSection"
 import { motion } from "framer-motion"
 import ParticleBackground from "../components/ui/particle-background"
 import { useLanguage } from "../context/LanguageContext"
+import { useGatedAboutNavigation } from "../hooks/useGatedAboutNavigation"
 import ScrollReveal from "../components/ScrollReveal"
 import profileImage from "../assets/images/imgme.jpg"
 import resumePDF from "../assets/documents/AbdullahIftikharResume.pdf"
 
 export default function Home() {
   const navigate = useNavigate()
+  const { navigateToAbout, isRewardLoading } = useGatedAboutNavigation()
   const theme = useTheme()
   const { t } = useLanguage()
   const [pageLoading, setPageLoading] = useState(true)
@@ -108,7 +110,8 @@ export default function Home() {
                   <Button
                     variant="outlined"
                     size="large"
-                    onClick={() => navigate("/about")}
+                    onClick={navigateToAbout}
+                    disabled={isRewardLoading}
                     sx={{
                       borderRadius: "50px",
                       px: 3,

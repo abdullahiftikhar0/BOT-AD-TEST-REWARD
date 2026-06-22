@@ -25,7 +25,8 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "@mui/icons-material"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
+import { useGatedAboutNavigation } from "../../hooks/useGatedAboutNavigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { useState, useEffect, useRef } from "react"
 import { useThemeContext } from "../../context/ThemeContext"
@@ -129,6 +130,8 @@ const TextScrambler = ({ text, isActive }) => {
 export default function Sidebar({ open, activePage, onClose }) {
   const theme = useTheme()
   const navigate = useNavigate()
+  const location = useLocation()
+  const { navigateToAbout, isRewardLoading } = useGatedAboutNavigation()
   const { mode, toggleColorMode } = useThemeContext()
   const [isCollapsed, setIsCollapsed] = useState(false)
 
@@ -154,7 +157,13 @@ export default function Sidebar({ open, activePage, onClose }) {
     { name: "HIRE ME", icon: <Email />, path: "/hire-me" },
   ]
 
-  const handleNavigation = (path) => {
+  const handleNavigation = async (path) => {
+    if (path === "/about" && location.pathname === "/") {
+      await navigateToAbout()
+      onClose()
+      return
+    }
+
     navigate(path)
     onClose()
   }

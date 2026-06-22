@@ -6,6 +6,9 @@ import './styles/globals.css';
 import ThemeRegistry from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { TelegramProvider } from './context/TelegramContext';
+import { initTomoAdsReward } from './lib/tomoads';
+
+initTomoAdsReward();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

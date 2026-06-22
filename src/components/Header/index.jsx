@@ -2,17 +2,18 @@
 import { useState, useEffect } from "react"
 import { Box, Typography, IconButton, useTheme, useMediaQuery } from "@mui/material"
 import { Menu, DarkMode, LightMode, Language, GitHub } from "@mui/icons-material"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import ThemeToggle from "../ThemeToggle"
 import ScrambleText from "../ScrambleText"
 import LanguageSelector from "../LanguageSelector"
 import { useLanguage } from "../../context/LanguageContext"
+import { useGatedAboutNavigation } from "../../hooks/useGatedAboutNavigation"
 
 export default function Header({ activePage, title, toggleSidebar }) {
   const theme = useTheme()
-  const navigate = useNavigate()
   const { t } = useLanguage()
+  const { navigateToAbout, isRewardLoading, isGatedFromHome } = useGatedAboutNavigation()
 
   const navItems = [
     { name: "HOME", path: "/", translationKey: "home" },
@@ -118,48 +119,75 @@ export default function Header({ activePage, title, toggleSidebar }) {
             justifyContent: { xs: "center", md: "flex-start" },
           }}
         >
-          {navItems.map((item) => (
-            <motion.div key={item.name} variants={navItemVariants}>
-              <Link
-                to={item.path}
-                style={{
-                  textDecoration: "none",
-                  color: theme.palette.mode === "dark" ? "white" : "black",
+          {navItems.map((item) => {
+            const isAboutFromHome = item.path === "/about" && isGatedFromHome
+            const navContent = (
+              <Box
+                sx={{
+                  position: "relative",
+                  cursor: isRewardLoading && isAboutFromHome ? "wait" : "pointer",
+                  opacity: isRewardLoading && isAboutFromHome ? 0.6 : 1,
+                  "&::after": {
+                    content: '""',
+                    position: "absolute",
+                    width: activePage === item.name ? "100%" : "0%",
+                    height: "2px",
+                    bottom: "-4px",
+                    left: "0",
+                    backgroundColor: theme.palette.mode === "dark" ? "white" : "black",
+                    transition: "width 0.3s ease",
+                  },
+                  "&:hover::after": {
+                    width: "100%",
+                  },
                 }}
               >
-                <Box
+                <ScrambleText
+                  text={t(item.translationKey)}
+                  variant="body1"
+                  speed={30}
                   sx={{
-                    position: "relative",
-                    "&::after": {
-                      content: '""',
-                      position: "absolute",
-                      width: activePage === item.name ? "100%" : "0%",
-                      height: "2px",
-                      bottom: "-4px",
-                      left: "0",
-                      backgroundColor: theme.palette.mode === "dark" ? "white" : "black",
-                      transition: "width 0.3s ease",
-                    },
-                    "&:hover::after": {
-                      width: "100%",
-                    },
+                    fontWeight: activePage === item.name ? "bold" : "normal",
+                    fontSize: activePage === item.name ? "1.2rem" : "1rem",
+                    fontFamily: "inherit",
+                    transition: "all 0.3s ease",
                   }}
-                >
-                  <ScrambleText
-                    text={t(item.translationKey)}
-                    variant="body1"
-                    speed={30}
+                />
+              </Box>
+            )
+
+            return (
+              <motion.div key={item.name} variants={navItemVariants}>
+                {isAboutFromHome ? (
+                  <Box
+                    component="button"
+                    type="button"
+                    onClick={navigateToAbout}
+                    disabled={isRewardLoading}
                     sx={{
-                      fontWeight: activePage === item.name ? "bold" : "normal",
-                      fontSize: activePage === item.name ? "1.2rem" : "1rem",
-                      fontFamily: "inherit",
-                      transition: "all 0.3s ease",
+                      border: "none",
+                      background: "none",
+                      padding: 0,
+                      textDecoration: "none",
+                      color: theme.palette.mode === "dark" ? "white" : "black",
                     }}
-                  />
-                </Box>
-              </Link>
-            </motion.div>
-          ))}
+                  >
+                    {navContent}
+                  </Box>
+                ) : (
+                  <Link
+                    to={item.path}
+                    style={{
+                      textDecoration: "none",
+                      color: theme.palette.mode === "dark" ? "white" : "black",
+                    }}
+                  >
+                    {navContent}
+                  </Link>
+                )}
+              </motion.div>
+            )
+          })}
         </Box>
       </motion.div>
     </Box>
