@@ -22,13 +22,19 @@ export default function Home() {
   const adRef = useRef(null)
 
   useEffect(() => {
+    // Wait until the loading skeleton is gone — adRef.current is null
+    // while the loading branch is rendered, so the effect must re-run
+    // once pageLoading flips to false and the Box mounts.
+    if (pageLoading) return
     if (!adRef.current) return
+    // Guard against double-injection (React StrictMode runs effects twice in dev)
+    if (adRef.current.querySelector('script[data-placement]')) return
     const script = document.createElement("script")
     script.src = "https://api2.tomoads.com/tag.js"
     script.dataset.placement = "bcced0cd-f0cd-4368-8a33-2fabc877ec8a"
     script.async = true
     adRef.current.appendChild(script)
-  }, [])
+  }, [pageLoading])
 
   useEffect(() => {
     // Simulate page content loading
