@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { Box, Container, Typography, Button, Grid, useTheme, CircularProgress, Skeleton } from "@mui/material"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Layout from "../layouts/Layout"
 import CounterSection from "../components/CounterSection"
 import { motion } from "framer-motion"
@@ -19,6 +19,16 @@ export default function Home() {
   const [pageLoading, setPageLoading] = useState(true)
   const [imageLoaded, setImageLoaded] = useState(false)
   const [profileHovered, setProfileHovered] = useState(false)
+  const adRef = useRef(null)
+
+  useEffect(() => {
+    if (!adRef.current) return
+    const script = document.createElement("script")
+    script.src = "https://api2.tomoads.com/tag.js"
+    script.dataset.placement = "bcced0cd-f0cd-4368-8a33-2fabc877ec8a"
+    script.async = true
+    adRef.current.appendChild(script)
+  }, [])
 
   useEffect(() => {
     // Simulate page content loading
@@ -238,6 +248,8 @@ export default function Home() {
             <CounterSection />
           </ScrollReveal>
         </Box>
+
+        <Box ref={adRef} sx={{ my: 4, display: "flex", justifyContent: "center" }} />
       </Container>
     </Layout>
   )
