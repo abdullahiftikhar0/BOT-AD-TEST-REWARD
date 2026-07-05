@@ -27,6 +27,7 @@ import { motion } from "framer-motion"
 import ScrollReveal from "../components/ScrollReveal"
 import { staggerContainer } from "../hooks/useScrollAnimation"
 import ParticleBackground from "../components/ui/particle-background"
+import AdBanner from "../components/AdBanner"
 
 export default function WorksPage() {
   const theme = useTheme()
@@ -261,6 +262,8 @@ export default function WorksPage() {
                 Clear Filters
               </Button>
             </Box>
+
+            <AdBanner />
 
             {/* Repositories Section */}
             <Box>
